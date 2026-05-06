@@ -150,7 +150,7 @@ if(UNIX)
   option(ENABLE_NATIVE_CPU_ARCHITECTURE "Use -march=native (build-machine-specific, not portable)" OFF)
 
   # ENABLE_X86_64_V3 is only meaningful on x86-64; silently ignore it on other architectures.
-  if(NOT CHOREONOID_IS_AARCH64 AND CMAKE_SYSTEM_PROCESSOR MATCHES "^(x86_64|amd64|AMD64)$")
+  if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(x86_64|amd64|AMD64)$")
     option(ENABLE_X86_64_V3 "Use -march=x86-64-v3 (AVX2/FMA/BMI2, portable to Haswell/Excavator or later)" OFF)
   else()
     set(ENABLE_X86_64_V3 OFF)

@@ -557,7 +557,8 @@ bool AABBNoLeafTree::Walk(GenericWalkingCallback callback, void* user_data) cons
 		}																			\
 	}
 
-// Use 64-bit arithmetic on any 64-bit platform (x86-64, aarch64, etc.)
+// Use 64-bit arithmetic on any 64-bit platform (x86-64, aarch64, etc.).
+// UINTPTR_MAX > 0xFFFFFFFFU (i.e. > UINT32_MAX) is true on all 64-bit targets.
 #if UINTPTR_MAX > 0xFFFFFFFFU
 #define REMAP_DATA(member)											\
 	/* Fix data */													\
