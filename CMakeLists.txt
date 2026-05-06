@@ -87,6 +87,14 @@ set(CNOID_BINARY_SHARE_DIR ${CHOREONOID_BINARY_SHARE_DIR})
 
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+# Detect the target CPU architecture once for use throughout the build.
+# CHOREONOID_IS_AARCH64 is TRUE on native or cross-compiled aarch64/arm64 targets.
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(aarch64|arm64)$")
+  set(CHOREONOID_IS_AARCH64 TRUE)
+else()
+  set(CHOREONOID_IS_AARCH64 FALSE)
+endif()
+
 # C++ version
 if(CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD ${CMAKE_CXX_STANDARD} CACHE STRING "C++ version number. Specify 20 or 17.")
@@ -140,7 +148,13 @@ if(UNIX)
   set(compiler_general_options "-Wreturn-type")
 
   option(ENABLE_NATIVE_CPU_ARCHITECTURE "Use -march=native (build-machine-specific, not portable)" OFF)
-  option(ENABLE_X86_64_V3 "Use -march=x86-64-v3 (AVX2/FMA/BMI2, portable to Haswell/Excavator or later)" OFF)
+
+  # ENABLE_X86_64_V3 is only meaningful on x86-64; silently ignore it on other architectures.
+  if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(x86_64|amd64|AMD64)$")
+    option(ENABLE_X86_64_V3 "Use -march=x86-64-v3 (AVX2/FMA/BMI2, portable to Haswell/Excavator or later)" OFF)
+  else()
+    set(ENABLE_X86_64_V3 OFF)
+  endif()
 
   if(ENABLE_NATIVE_CPU_ARCHITECTURE AND ENABLE_X86_64_V3)
     message(WARNING
