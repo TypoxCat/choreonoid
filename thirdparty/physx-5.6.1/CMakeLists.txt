@@ -176,6 +176,25 @@ else()
     set(PHYSX_WARNING_FLAGS "")
 endif()
 
+# aarch64-specific flags that fix known GCC/Clang issues on ARM 64-bit targets.
+# These mirror the AARCH64_FLAGS block in upstream linux/CMakeLists.txt (L108-118).
+# Without -ffp-contract=off, GCC may fuse floating-point operations in ways that
+# cause accuracy deviations vs. the reference scalar path PhysX expects.
+# -fno-delete-null-pointer-checks prevents a known miscompilation on some GCC versions.
+# -faligned-new (GCC) ensures operator new returns ABI-required aligned storage.
+if(CHOREONOID_IS_AARCH64)
+    if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+        list(APPEND PHYSX_COMPILER_SPECIFIC_FLAGS
+            -ffp-contract=off
+            -fno-delete-null-pointer-checks
+            -faligned-new)
+    elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+        list(APPEND PHYSX_COMPILER_SPECIFIC_FLAGS
+            -ffp-contract=off
+            -Wno-unsupported-floating-point-opt)
+    endif()
+endif()
+
 # MSVC flags - see upstream windows/CMakeLists.txt L30-74.
 # We deliberately do NOT include the upstream windows/CMakeLists.txt because
 # it mutates CMAKE_CXX_FLAGS / CMAKE_SHARED_LINKER_FLAGS globally, which would

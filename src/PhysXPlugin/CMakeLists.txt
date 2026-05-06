@@ -43,7 +43,14 @@ if(NOT ENABLE_PHYSX)
     set(PHYSX_PLATFORM_DIR "${_physx_default_platform_dir}" CACHE STRING
       "PhysX binary subdirectory (e.g. win.x86_64.vc143.mt, win.x86_64.vc142.mt)")
   else()
-    set(PHYSX_PLATFORM_DIR "linux.x86_64")
+    # Derive the PhysX Linux platform string from the current architecture.
+    if(CHOREONOID_IS_AARCH64)
+      set(_physx_default_linux_platform "linux.aarch64")
+    else()
+      set(_physx_default_linux_platform "linux.x86_64")
+    endif()
+    set(PHYSX_PLATFORM_DIR "${_physx_default_linux_platform}" CACHE STRING
+      "PhysX binary subdirectory (e.g. linux.x86_64, linux.aarch64)")
   endif()
 
   include_directories(${PHYSX_DIR}/include)
