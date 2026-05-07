@@ -71,8 +71,9 @@ choreonoid_add_plugin(${target} ${sources} ${mofiles} HEADERS ${headers})
 set_target_properties(${target} PROPERTIES COMPILE_DEFINITIONS "PX_PHYSX_STATIC_LIB")
 set(_physx_link_libraries ${PHYSX_LIBRARIES})
 if(UNIX AND NOT APPLE)
-  # PhysX static archives have circular dependencies (e.g. CompoundTreePool /
-  # CompoundTree symbols), so GNU ld / lld need a grouped archive link.
+  # PhysX static archives have circular dependencies (e.g. between
+  # CompoundTreePool and CompoundTree symbols), so GNU ld / lld need a
+  # grouped archive link.
   set(_physx_link_libraries -Wl,--start-group ${PHYSX_LIBRARIES} -Wl,--end-group)
 endif()
 target_link_libraries(${target} PUBLIC CnoidBodyPlugin PRIVATE ${_physx_link_libraries})
