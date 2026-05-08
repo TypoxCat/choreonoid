@@ -69,7 +69,14 @@ set(sources
 make_gettext_mofiles(${target} mofiles)
 choreonoid_add_plugin(${target} ${sources} ${mofiles} HEADERS ${headers})
 set_target_properties(${target} PROPERTIES COMPILE_DEFINITIONS "PX_PHYSX_STATIC_LIB")
-target_link_libraries(${target} PUBLIC CnoidBodyPlugin PRIVATE ${PHYSX_LIBRARIES})
+set(_physx_link_libraries ${PHYSX_LIBRARIES})
+if(UNIX AND NOT APPLE)
+  # PhysX static archives have circular dependencies (e.g. between
+  # CompoundTreePool and CompoundTree symbols), so GNU ld / lld need a
+  # grouped archive link.
+  set(_physx_link_libraries -Wl,--start-group ${PHYSX_LIBRARIES} -Wl,--end-group)
+endif()
+target_link_libraries(${target} PUBLIC CnoidBodyPlugin PRIVATE ${_physx_link_libraries})
 
 # Suppress LTO-time warnings originating from the bundled PhysX sources.
 #
